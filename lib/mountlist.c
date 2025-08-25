@@ -232,12 +232,14 @@ me_remote (char const *fs_name, _GL_UNUSED char const *fs_type)
 
 #ifndef ME_REMOTE
 /* A file system is "remote" if its Fs_name contains a ':'
+   and it not of type bcachefs (which uses ':' as a multi-device separator)
    or if (it is of type (smbfs or cifs) and its Fs_name starts with '//')
    or if it is of any other of the listed types
    or Fs_name is equal to "-hosts" (used by autofs to mount remote fs).
    "VM" file systems like prl_fs or vboxsf are not considered remote here. */
 # define ME_REMOTE(Fs_name, Fs_type)            \
-    (strchr (Fs_name, ':') != NULL              \
+    ((strchr (Fs_name, ':') != NULL             \
+      && strcmp (Fs_type, "bcachefs") == 0)     \
      || ((Fs_name)[0] == '/'                    \
          && (Fs_name)[1] == '/'                 \
          && (strcmp (Fs_type, "smbfs") == 0     \
